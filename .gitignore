@@ -28,3 +28,6 @@ build/
 
 # Optional: ignore compiled output (if generated)
 frontend/public/
+
+# File too large
+backend/db/dump.sql

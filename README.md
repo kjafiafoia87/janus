@@ -1,7 +1,7 @@
 # 📚 Janus — European Commission Merger Decisions Explorer
 
-Janus est une plateforme de recherche intelligente permettant d’explorer, filtrer et rechercher les décisions de fusion de la Commission Européenne.  
-Elle combine une base PostgreSQL, un moteur de recherche Elasticsearch, un backend Flask, et un frontend React avec Vite, le tout orchestré en Docker.
+Janus est une plateforme à destination des juristes, regroupant plusieurs outils, dont Concurria, destiné aux spécialistes du droit de la concurrence. Cet outil centralise l’intégralité des décisions juridiques de l’Union européenne et permet d’explorer, filtrer et rechercher les décisions de fusion de la Commission européenne.
+Il combine une base de données PostgreSQL, un moteur de recherche Elasticsearch, un backend Flask et un frontend React avec Vite, le tout orchestré avec Docker.
 
 ---
 
