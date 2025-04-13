@@ -1,3 +1,6 @@
+# services/elasticsearch_service.py
+from utils.elasticsearch_utils import es
+
 def get_distinct_filters():
     aggs = {
         "languages": {"terms": {"field": "language.keyword", "size": 100}},
@@ -16,4 +19,12 @@ def get_distinct_filters():
         "languages": [b["key"] for b in res["aggregations"]["languages"]["buckets"]],
         "sectors": [b["key"] for b in res["aggregations"]["sectors"]["buckets"]],
         "companies": [b["key"] for b in res["aggregations"]["companies"]["buckets"]],
+    }
+
+def search_documents(filters):
+    res = es.search(index="merger_cases", size=100)
+    hits = res["hits"]["hits"]
+    return {
+        "total": res["hits"]["total"]["value"],
+        "results": [hit["_source"] for hit in hits]
     }

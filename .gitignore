@@ -16,6 +16,9 @@ build/
 .vscode/
 .idea/
 .DS_Store
+__pycache__/
+**/__pycache__/
+*.pyc
 
 # TypeScript
 *.tsbuildinfo
@@ -39,3 +42,6 @@ backend/services/__pycache__/elasticsearch_service.cpython-311.pyc
 backend/__pycache__/__init__.cpython-311.pyc
 backend/utils/__pycache__/elasticsearch_utils.cpython-311.pyc
 backend/db/__pycache__/__init__.cpython-311.pyc
+backend/routes/__init__.py
+backend/utils/__init__.py
+backend/services/__init__.py
