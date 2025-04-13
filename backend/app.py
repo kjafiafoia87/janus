@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 es = Elasticsearch("http://elasticsearch:9200")
 
-@app.route("/search")
+@app.route("/concuria")
 def search():
     query = request.args.get("q", "")
     company = request.args.get("company")
