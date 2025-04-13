@@ -31,3 +31,4 @@ frontend/public/
 
 # File too large
 backend/db/dump.sql
+backend/db/__pycache__/db_utils.cpython-311.pyc

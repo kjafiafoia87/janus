@@ -30,6 +30,7 @@ reindex:
 pg-dump-local:
 	pg_dump -U vincentgarrigue -d concuriadb > backend/db/dump.sql
 
-reset-pg:
+resetpg:
 	docker-compose down -v --remove-orphans
 	docker-compose up --build -d
+	docker-compose exec backend python indexer.py
