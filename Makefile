@@ -4,6 +4,22 @@ up:
 down:
 	docker-compose down -v --remove-orphans
 
+restarti:
+	docker-compose down -v --remove-orphans
+	docker-compose build
+	docker-compose up -d
+	docker-compose exec backend python init.py
+	
+restart:
+	docker-compose down -v --remove-orphans
+	docker-compose build
+	docker-compose up -d
+	docker-compose exec backend python init.py
+
+cache:
+	docker-compose down -v --remove-orphans
+	docker-compose build --no-cache
+
 logs:
 	docker-compose logs -f
 
@@ -25,7 +41,7 @@ psql:
 	docker-compose exec postgres psql -U vincentgarrigue -d concuriadb
 
 reindex:
-	docker-compose exec backend python indexer.py
+	docker-compose exec backend python init.py
 
 pg-dump-local:
 	pg_dump -U vincentgarrigue -d concuriadb > backend/db/dump.sql

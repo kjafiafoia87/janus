@@ -5,11 +5,15 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # réduit à 512 Mo
     ports:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    deploy:
+      resources:
+        limits:
+          memory: 1g
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.12.2
@@ -20,6 +24,10 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   backend:
     build: ./backend
@@ -31,6 +39,10 @@ services:
     depends_on:
       - elasticsearch
       - postgres
+    deploy:
+      resources:
+        limits:
+          memory: 512m
 
   postgres:
     image: postgres:15
@@ -44,7 +56,11 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./backend/db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
-      
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
   frontend:
     build: ./frontend
     container_name: frontend
@@ -52,6 +68,10 @@ services:
       - "3000:80"
     depends_on:
       - backend
+    deploy:
+      resources:
+        limits:
+          memory: 2g
 
 volumes:
   es_data:

@@ -1,33 +1,23 @@
-from flask import Flask, request, jsonify
 from elasticsearch import Elasticsearch
-import psycopg2
-
-app = Flask(__name__)
+import subprocess
 
 es = Elasticsearch("http://elasticsearch:9200")
 
-@app.route("/concuria")
-def search():
-    query = request.args.get("q", "")
-    company = request.args.get("company")
-    sector = request.args.get("sector")
+def ensure_index():
+    if not es.indices.exists(index="merger_cases"):
+        print("⚠️ Index merger_cases non trouvé. Lancement de l'indexation…")
+        subprocess.run(["python", "indexer.py"], check=True)
+    else:
+        print("✅ Index merger_cases déjà présent.")
 
-    es_query = {
-        "query": {
-            "bool": {
-                "must": [{"match": {"file_text": query}}] if query else [],
-                "filter": []
-            }
-        }
-    }
+# ensure_index()
 
-    if company:
-        es_query["query"]["bool"]["filter"].append({"term": {"companies.keyword": company}})
-    if sector:
-        es_query["query"]["bool"]["filter"].append({"term": {"label_titles.keyword": sector}})
+# ensuite continue avec ton app Flask
+from flask import Flask
+from utils.filters import filters_bp
 
-    result = es.search(index="merger_cases", body=es_query)
-    return jsonify(result)
+app = Flask(__name__)
+app.register_blueprint(filters_bp, url_prefix='/api')
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)

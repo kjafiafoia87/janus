@@ -31,4 +31,11 @@ frontend/public/
 
 # File too large
 backend/db/dump.sql
+
+# Rest
 backend/db/__pycache__/db_utils.cpython-311.pyc
+backend/utils/__pycache__/filters.cpython-311.pyc
+backend/services/__pycache__/elasticsearch_service.cpython-311.pyc
+backend/__pycache__/__init__.cpython-311.pyc
+backend/utils/__pycache__/elasticsearch_utils.cpython-311.pyc
+backend/db/__pycache__/__init__.cpython-311.pyc
