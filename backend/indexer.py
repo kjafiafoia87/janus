@@ -17,7 +17,16 @@ if es.indices.exists(index="merger_cases"):
     es.indices.delete(index="merger_cases")
     print("Index merger_cases supprimé")
 
-es.indices.create(index="merger_cases")
+from elasticsearch import exceptions
+
+try:
+    es.indices.create(index="merger_cases")
+except exceptions.BadRequestError as e:
+    if "resource_already_exists_exception" in str(e):
+        print("ℹ️ Index merger_cases existe déjà, pas besoin de le créer.")
+    else:
+        raise
+    
 print("Index merger_cases recréé")
 
 # Requête SQL

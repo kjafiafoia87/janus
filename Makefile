@@ -9,7 +9,7 @@ restarti:
 	docker-compose build
 	docker-compose up -d
 	docker-compose exec backend python init.py
-	
+
 restart:
 	docker-compose down -v --remove-orphans
 	docker-compose build
@@ -20,8 +20,24 @@ cache:
 	docker-compose down -v --remove-orphans
 	docker-compose build --no-cache
 
+front:
+	docker-compose stop frontend
+	docker-compose build frontend
+	docker-compose up -d frontend
+
+back:
+	docker-compose stop backend
+	docker-compose build backend
+	docker-compose up -d backend
+
 logs:
 	docker-compose logs -f
+
+logsfront:
+	docker-compose logs -f frontend
+
+back:
+	docker-compose logs -f backend
 
 logsbd:
 	docker-compose logs postgres

@@ -19,6 +19,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = "multi-select-options";
 
   const filteredOptions = options.filter(option =>
     option.toLowerCase().includes(search.toLowerCase()) &&
@@ -54,6 +55,11 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
             : 'bg-white border-gray-300'
         } cursor-text`}
         onClick={() => setIsOpen(true)}
+        aria-label="Multi-select input"
+        role="combobox"
+        aria-expanded={isOpen ? 'true' : 'false'}
+        aria-controls={listboxId}
+        tabIndex={0}
       >
         <div className="flex flex-wrap gap-1">
           {selected.map(option => (
@@ -72,6 +78,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                   handleRemove(option);
                 }}
                 className="ml-1 hover:text-red-500"
+                aria-label={`Remove ${option}`}
+                title={`Remove ${option}`}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -83,6 +91,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
               darkMode ? 'bg-gray-700 text-gray-200' : 'bg-white text-gray-700'
             }`}
             placeholder={selected.length === 0 ? placeholder : ''}
+            aria-label="Search or select options"
+            title="Search or select options"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setIsOpen(true)}
@@ -92,11 +102,13 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
 
       {isOpen && filteredOptions.length > 0 && (
         <div
+          id={listboxId}
           className={`absolute z-10 w-full mt-1 rounded-md shadow-lg ${
             darkMode
               ? 'bg-gray-700 border border-gray-600'
               : 'bg-white border border-gray-200'
           }`}
+          role="listbox"
         >
           {filteredOptions.map(option => (
             <div
@@ -107,6 +119,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
                   : 'hover:bg-gray-100 text-gray-700'
               }`}
               onClick={() => handleSelect(option)}
+              role="option"
+              tabIndex={0}
             >
               {option}
             </div>
