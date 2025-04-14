@@ -78,7 +78,7 @@ while True:
         es.index(index="merger_cases", id=row[0], document=doc)
         total += 1
 
-        if total % 20 == 0:
+        if total % 100 == 0:
                 print(f"➡️ {total} documents indexés — Memory used: {psutil.virtual_memory().percent}%")
 
 print(f"✅ Indexation terminée : {total} documents envoyés")
