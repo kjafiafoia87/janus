@@ -1,4 +1,3 @@
-# routes/filters.py
 from flask import Blueprint, jsonify
 from services.elasticsearch_service import get_distinct_filters
 

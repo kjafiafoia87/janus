@@ -5,9 +5,8 @@ import { ResultsList } from './Concuria/ResultsList';
 import { FilterSidebar } from './Concuria/FilterSidebar';
 import { Pagination } from './Concuria/Pagination';
 import { FilterOptions, SearchFilters } from './Concuria/types';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useSearchDocuments } from '@/hooks/useSearchDocuments';
-
+import { useSearchDocuments } from '../hooks/useSearchDocuments';
+import { useDebounce } from '../hooks/useDebounce';
 export default function Concuria({ darkMode }: { darkMode: boolean }) {
   const [filters, setFilters] = useState<SearchFilters>({
     case_number: '',
