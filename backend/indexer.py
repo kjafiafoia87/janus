@@ -1,3 +1,4 @@
+import psutil
 from elasticsearch import Elasticsearch
 from db.db_utils import wait_for_postgres, get_db_connection
 from utils.elasticsearch_utils import wait_for_elasticsearch
@@ -26,7 +27,7 @@ except exceptions.BadRequestError as e:
         print("ℹ️ Index merger_cases existe déjà, pas besoin de le créer.")
     else:
         raise
-    
+
 print("Index merger_cases recréé")
 
 # Requête SQL
@@ -53,7 +54,7 @@ GROUP BY
 """)
 
 # Indexation par lots
-batch_size = 100
+batch_size = 20
 total = 0
 
 while True:
@@ -76,5 +77,8 @@ while True:
         }
         es.index(index="merger_cases", id=row[0], document=doc)
         total += 1
+
+        if total % 20 == 0:
+                print(f"➡️ {total} documents indexés — Memory used: {psutil.virtual_memory().percent}%")
 
 print(f"✅ Indexation terminée : {total} documents envoyés")
