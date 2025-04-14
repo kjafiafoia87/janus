@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Moon, Sun, UserCircle, Bell } from 'lucide-react';
-import Concuria from './components/Concuria/Concuria';
+import Concuria from './components/Concuria';
 import HeaderContent from './components/HeaderContent';
 import HomePage from './components/HomePage';
 import Profile from './components/Profile';

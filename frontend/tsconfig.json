@@ -1,4 +1,14 @@
 {
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"]
+    },
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,                      // (optionnel mais recommandé)
+    "skipLibCheck": true,                // (optionnel, accélère la compilation)
+    "moduleResolution": "node"          // (optionnel si pas déjà hérité)
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
