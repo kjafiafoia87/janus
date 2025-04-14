@@ -14,7 +14,6 @@ restart:
 	docker-compose down -v --remove-orphans
 	docker-compose build
 	docker-compose up -d
-	docker-compose exec backend python init.py
 
 cache:
 	docker-compose down -v --remove-orphans

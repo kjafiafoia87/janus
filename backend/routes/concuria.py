@@ -5,8 +5,12 @@ concuria_bp = Blueprint('concuria', __name__)
 
 @concuria_bp.route('/filters', methods=['GET'])
 def filters():
-    filters = get_distinct_filters()
-    return jsonify(filters)
+    try: 
+        filters = get_distinct_filters()
+        return jsonify(filters)
+    except Exception as e:
+            return jsonify({"error /filters ": str(e)}), 500
+
 
 @concuria_bp.route('/search', methods=['POST'])
 def search():
