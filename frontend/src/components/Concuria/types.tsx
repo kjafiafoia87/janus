@@ -7,6 +7,7 @@ export interface Document {
     decision_date: string;
     label_codes: string[];
     label_titles: string[];
+    link: string;
   }
   
   export interface SearchFilters {
