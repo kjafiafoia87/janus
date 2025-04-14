@@ -1,34 +1,35 @@
+// src/lib/api.ts
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   timeout: 10000,
 });
 
-interface GetDocumentsParams {
-  q?: string;
-  page?: number;
-  pageSize?: number;
+// If you're using POST for document search, use this:
+interface SearchDocumentsParams {
+  case_number?: string;
+  title?: string;
+  companies?: string[];
+  language?: string;
+  text_search?: string;
   date_from?: string;
   date_to?: string;
-  companies?: string[];
-  file_text?: string;
+  label_codes?: string[];
+  label_titles?: string[];
+  page?: number;
+  pageSize?: number;
 }
 
-export const getDocuments = async (params: GetDocumentsParams = {}) => {
-  let url = '/concuria?';
-  for (const key in params) {
-    // Narrow down key to keyof GetDocumentsParams
-    const typedKey = key as keyof GetDocumentsParams; 
-    if (params[typedKey] !== undefined && params[typedKey] !== null && params[typedKey] !== '') {
-      if (Array.isArray(params[typedKey])) {
-        url += `${key}=${params[typedKey].join(',')}&`;
-      } else {
-        url += `${key}=${params[typedKey]}&`;
-      }
-    }
-  }
-  const response = await api.get(url);
+export const searchDocuments = async (params: SearchDocumentsParams = {}) => {
+  const response = await api.post('/search', params);
   return response.data;
 };
+
+// Optional: Get available filters
+export const fetchFilters = async () => {
+  const response = await api.get('/filters');
+  return response.data;
+};
+
 export default api;

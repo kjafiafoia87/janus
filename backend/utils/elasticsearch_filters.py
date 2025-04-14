@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Dict
 
 
@@ -16,10 +15,9 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
     must_clauses = []
     filter_clauses = []
 
+    # Dates
     date_from = filters.get("date_from")
     date_to = filters.get("date_to")
-    companies = filters.get("companies")
-    file_text = filters.get("file_text")
 
     if date_from and date_to:
         filter_clauses.append({
@@ -50,16 +48,30 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
             }
         })
 
+    # Entreprises (au moins une)
+    companies = filters.get("companies")
     if companies:
-        company_should = [{"term": {"companies": company}} for company in companies]
-        filter_clauses.append({"bool": {"should": company_should}})
+        filter_clauses.append({
+            "terms": {
+                "companies.keyword": companies
+            }
+        })
 
+    # Texte libre
+    file_text = filters.get("file_text") or filters.get("text_search")
     if file_text:
-        must_clauses.append({"match": {"file_text": file_text}})
+        must_clauses.append({
+            "match": {
+                "file_text": file_text
+            }
+        })
+
+    # Ajout au bool query
+    query.setdefault("query", {}).setdefault("bool", {})
 
     if filter_clauses:
-        query.setdefault("query", {}).setdefault("bool", {})["filter"] = filter_clauses
+        query["query"]["bool"]["filter"] = filter_clauses
     if must_clauses:
-        query.setdefault("query", {}).setdefault("bool", {})["must"] = must_clauses
+        query["query"]["bool"]["must"] = must_clauses
 
     return query
