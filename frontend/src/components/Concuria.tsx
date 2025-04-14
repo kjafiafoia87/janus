@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Filter } from 'lucide-react';
+import { Filter, Search, Calendar, Globe2 } from 'lucide-react';
 import { MultiSelect } from './MultiSelect';
 
 interface Document {
@@ -59,13 +59,6 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  const isAnyFilterActive = () => {
-    return Object.entries(filters).some(([_, value]) => {
-      if (Array.isArray(value)) return value.length > 0;
-      return value !== '';
-    });
-  };
-
   useEffect(() => {
     fetchFilters();
   }, []);
@@ -118,112 +111,180 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   };
 
   return (
-    <div className="p-6">
-      <h1 className={`text-2xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-        Concuria Search
-      </h1>
-
-      {/* Filter panel */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        <input
-          type="text"
-          value={filters.case_number}
-          onChange={(e) => setFilters({ ...filters, case_number: e.target.value })}
-          className="p-2 border rounded"
-          placeholder="Case number"
-          list="case-numbers"
-          aria-label="Case number"
-        />
-        <datalist id="case-numbers">
-          {availableFilters.case_numbers?.map((num) => (
-            <option key={num} value={num} />
-          ))}
-        </datalist>
-
-        <input
-          type="text"
-          value={filters.title}
-          onChange={(e) => setFilters({ ...filters, title: e.target.value })}
-          className="p-2 border rounded"
-          placeholder="Title"
-          aria-label="Title"
-        />
-
-        <select
-          id="language-select"
-          title="Language"
-          aria-label="Language"
-          value={filters.language}
-          onChange={(e) => setFilters({ ...filters, language: e.target.value })}
-          className="p-2 border rounded"
-        >
-          <option value="">All Languages</option>
-          {['FR', 'EN'].map((lang) => (
-            <option key={lang} value={lang}>{lang}</option>
-          ))}
-        </select>
-
-        <MultiSelect
-          options={availableFilters.companies || []}
-          selected={filters.companies}
-          onChange={(selected) => setFilters({ ...filters, companies: selected })}
-          placeholder="Companies"
-          darkMode={darkMode}
-        />
-
-        <input
-          id="date-from"
-          type="date"
-          aria-label="Date From"
-          title="Date From"
-          value={filters.date_from}
-          onChange={(e) => setFilters({ ...filters, date_from: e.target.value })}
-          className="p-2 border rounded"
-        />
-
-        <input
-          id="date-to"
-          type="date"
-          aria-label="Date To"
-          title="Date To"
-          value={filters.date_to}
-          onChange={(e) => setFilters({ ...filters, date_to: e.target.value })}
-          className="p-2 border rounded"
-        />
-      </div>
-
-      <div className={`mb-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-        Found {totalResults} result{totalResults !== 1 && 's'}
-      </div>
-
-      <div className="space-y-4">
-        {loading ? (
-          <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Loading...
-          </div>
-        ) : (
-          searchResults.map((doc) => (
-            <div
-              key={doc.case_number}
-              className={`p-4 rounded border shadow-sm ${darkMode ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-200'}`}
-            >
-              <h2 className="text-lg font-semibold">{doc.title}</h2>
-              <p className="text-sm">{doc.case_number} — {doc.decision_date}</p>
-              {/* <p className="mt-2 text-sm">{doc.file_text}</p> */}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {doc.companies?.map((company) => (
-                  <span
-                    key={company}
-                    className={`text-xs px-2 py-1 rounded-full ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
-                  >
-                    {company}
-                  </span>
-                ))}
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <aside className={`w-64 flex-shrink-0 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-r`}>
+        <div className="h-full p-4 overflow-y-auto">
+          <div className="space-y-6">
+            <div>
+              <h3 className={`flex items-center text-sm font-medium mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Case Number
+                  </label>
+                  <input 
+                    type="text"
+                    value={filters.case_number}
+                    onChange={(e) => setFilters({ ...filters, case_number: e.target.value })}
+                    placeholder="Enter case number"
+                    className={`w-full rounded-md shadow-sm text-sm ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Title
+                  </label>
+                  <input 
+                    type="text"
+                    value={filters.title}
+                    onChange={(e) => setFilters({ ...filters, title: e.target.value })}
+                    placeholder="Document title"
+                    className={`w-full rounded-md shadow-sm text-sm ${
+                      darkMode 
+                        ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Language
+                  </label>
+                  <div className="relative">
+                    <Globe2 className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                    <label htmlFor="language-select" className="...">Language</label>
+                    <select
+                      id="language-select"
+                      className={`w-full pl-10 rounded-md shadow-sm text-sm ${
+                        darkMode 
+                          ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                          : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                      }`}
+                      value={filters.language}
+                      onChange={(e) => setFilters({ ...filters, language: e.target.value })}
+                    >
+                      <option value="">All Languages</option>
+                      <option value="FR">French</option>
+                      <option value="EN">English</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Companies
+                  </label>
+                  <MultiSelect
+                    options={availableFilters.companies || []}
+                    selected={filters.companies}
+                    onChange={(selected) => setFilters({ ...filters, companies: selected })}
+                    placeholder="Select companies"
+                    darkMode={darkMode}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Period
+                  </label>
+                  <div className="space-y-2">
+                    <div className="relative">
+                      <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                      
+                      <label htmlFor="date-from" className="...">Period</label>
+                      <input
+                        id="date-from"
+                        type="date"
+                        className={`w-full pl-10 rounded-md shadow-sm text-sm ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                            : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                        }`}
+                        value={filters.date_from}
+                        onChange={(e) => setFilters({ ...filters, date_from: e.target.value })}
+                      />
+                    </div>
+                    <div className="relative">
+                      <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+                      <input
+                        id="date-to"
+                        type="date"
+                        className={`w-full pl-10 rounded-md shadow-sm text-sm ${
+                          darkMode 
+                            ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
+                            : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
+                        }`}
+                        value={filters.date_to}
+                        onChange={(e) => setFilters({ ...filters, date_to: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <main className={`flex-1 flex flex-col ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="p-6 flex-1">
+          <div className="mb-6">
+            <div className="relative max-w-lg">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 ${darkMode ? 'text-gray-400' : 'text-gray-400'}`} />
+              <input
+                type="text"
+                placeholder="Search documents..."
+                className={`w-full pl-10 pr-4 py-2 rounded-lg shadow-sm ${
+                  darkMode 
+                    ? 'bg-gray-800 border-gray-700 text-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                    : 'border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                }`}
+                value={filters.text_search}
+                onChange={(e) => setFilters({ ...filters, text_search: e.target.value })}
+              />
+            </div>
+          </div>
+          <div className={`mb-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Found {totalResults} result{totalResults !== 1 && 's'}
+          </div>
+          <div className="space-y-4">
+            {loading ? (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Loading...
+              </div>
+            ) : (
+              searchResults.map((doc) => (
+                <div
+                  key={doc.case_number}
+                  className={`p-4 rounded border shadow-sm ${darkMode ? 'bg-gray-800 text-white border-gray-600' : 'bg-white text-gray-900 border-gray-200'}`}
+                >
+                  <h2 className="text-lg font-semibold">{doc.title}</h2>
+                  <p className="text-sm">
+                    {doc.case_number} — {doc.decision_date}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {doc.companies?.map((company) => (
+                      <span
+                        key={company}
+                        className={`text-xs px-2 py-1 rounded-full ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}
+                      >
+                        {company}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

@@ -24,7 +24,8 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   const filteredOptions = options.filter(option =>
     option.toLowerCase().includes(search.toLowerCase()) &&
     !selected.includes(option)
-  );
+  )
+  .slice(0, 10);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
