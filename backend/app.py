@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from utils.filters import filters_bp
-from routes.concuria import concuria_bp  # ✅ ajoute ceci
+from routes.concuria import concuria_bp
 
 app = Flask(__name__)
 CORS(app)
