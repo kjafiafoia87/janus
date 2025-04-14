@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from '../../lib/api';
+import axios from 'axios';
 import { SearchBar } from './SearchBar';
 import { ResultsList } from './ResultsList';
 import { FilterSidebar } from './FilterSidebar';
@@ -41,13 +41,16 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
     const shouldSkipSearch = Object.values(filters).every(
       (value) => Array.isArray(value) ? value.length === 0 : value === ''
     );
-    if (shouldSkipSearch) fetchAllDocuments();
-    else searchDocuments();
+    if (shouldSkipSearch) {
+      fetchAllDocuments();
+    } else {
+      searchDocuments();
+    }
   }, [filters, currentPage]);
 
   const fetchFilters = async () => {
     try {
-      const response = await api.get('/filters');
+      const response = await axios.get<FilterOptions>('/api/filters');
       setAvailableFilters(response.data);
     } catch (error) {
       console.error('❌ Error fetching filters:', error);
@@ -57,12 +60,11 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   const searchDocuments = async () => {
     try {
       setLoading(true);
-      const response = await api.post('/search', {
+      const response = await axios.post<{ results: Document[]; total: number }>('/api/search', {
         ...filters,
         page: currentPage,
-        pageSize,
+        pageSize: pageSize,
       });
-      console.log("Total results:", response.data.total);
       setSearchResults(response.data.results || []);
       setTotalResults(response.data.total || 0);
     } catch (error) {
@@ -75,7 +77,10 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   const fetchAllDocuments = async () => {
     try {
       setLoading(true);
-      const response = await api.post('/search', {});
+      const response = await axios.post<{ results: Document[]; total: number }>('/api/search', {
+        page: currentPage,
+        pageSize: pageSize,
+      });
       setSearchResults(response.data.results || []);
       setTotalResults(response.data.total || 0);
     } catch (error) {
@@ -98,14 +103,22 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
         <div className="p-6 flex-1">
           <SearchBar
             value={filters.text_search}
-            onChange={(e) => setFilters({ ...filters, text_search: e.target.value })}
+            onChange={(e) => {
+              setCurrentPage(1); // reset page when searching
+              setFilters({ ...filters, text_search: e.target.value });
+            }}
             darkMode={darkMode}
           />
           <div className={`mb-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Found {totalResults} result{totalResults !== 1 && 's'}
           </div>
           <ResultsList documents={searchResults} darkMode={darkMode} loading={loading} />
-          <Pagination  currentPage={currentPage}  totalResults={totalResults}  pageSize={pageSize}  onPageChange={(page) => setCurrentPage(page)}/>
+          <Pagination
+            currentPage={currentPage}
+            totalResults={totalResults}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+          />
         </div>
       </main>
     </div>
