@@ -24,10 +24,10 @@ front:
 	docker-compose build frontend
 	docker-compose up -d frontend
 
-back:
-	docker-compose stop backend
-	docker-compose build backend
-	docker-compose up -d backend
+# back:
+# 	docker-compose stop backend
+# 	docker-compose build backend
+# 	docker-compose up -d backend
 
 logs:
 	docker-compose logs -f

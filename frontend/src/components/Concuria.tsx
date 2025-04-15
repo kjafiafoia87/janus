@@ -24,7 +24,7 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   });
 
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  
+
   const [availableFilters, setAvailableFilters] = useState<FilterOptions>({
     languages: [],
     companies: [],
@@ -45,7 +45,7 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   }, []);
 
   return (
-    <div className="flex h-screen">
+    <div className={`flex min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <FilterSidebar
         filters={filters}
         setFilters={(newFilters) => {
@@ -87,6 +87,7 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
             totalResults={total}
             pageSize={pageSize}
             onPageChange={setPage}
+            darkMode={darkMode}
           />
         </div>
       </main>
