@@ -134,7 +134,7 @@ export default function DocumentModal({ doc, onClose, darkMode }: Props) {
                         darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      #{code}
+                      {code}
                     </span>
                   ))}
                 </div>

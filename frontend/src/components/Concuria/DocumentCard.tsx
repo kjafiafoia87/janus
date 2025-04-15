@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document } from './types';
-import { Globe2, Tag } from 'lucide-react';
+import { Globe2, Tag, FileText } from 'lucide-react';
 
 interface Props {
   doc: Document;
@@ -27,25 +27,28 @@ export default function DocumentCard({ doc, darkMode, onClick }: Props) {
         meta: 'text-gray-500',
       };
 
-  return (
-    <div
-      onClick={onClick}
-      className={`p-6 rounded border shadow-sm cursor-pointer space-y-4 flex flex-col transition hover:shadow-md ${theme.card}`}
-    >
-      {/* Header */}
-      <div>
-        <h2 className="text-xl font-semibold">{doc.title}</h2>
-        <p className={`text-sm ${theme.meta}`}>
-          {doc.case_number} — {doc.decision_date}
-        </p>
-      </div>
+      return (
+        <div
+          onClick={onClick}
+          className={`p-6 rounded border shadow-sm cursor-pointer space-y-4 flex flex-col transition hover:shadow-md ${theme.card}`}
+        >
+          {/* Header */}
+          <div>
+            <div className="flex items-center gap-2 text-xl font-semibold">
+              <FileText className={`h-5 w-5 ${darkMode ? 'text-indigo-400' : 'text-indigo-600'}`} />
+              <span>{doc.case_number} — {doc.title}</span>
+            </div>
+            <p className={`text-sm ${theme.meta}`}>
+              {doc.decision_date}
+            </p>
+          </div>
 
       {/* Label Codes */}
       {doc.label_codes?.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {doc.label_codes.map((code, idx) => (
             <span key={`code-${idx}`} className={`${labelBase} ${theme.code}`}>
-              #{code}
+              {code}
             </span>
           ))}
         </div>

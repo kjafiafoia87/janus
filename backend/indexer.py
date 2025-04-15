@@ -71,7 +71,7 @@ while True:
             "case_number": row[4],
             "title": row[5],
             "companies": row[6],
-            "decision_date": row[7].isoformat() if row[7] else None,
+            "decision_date": row[7].strftime("%d-%m-%Y") if row[7] else None,
             "label_codes": row[8],
             "label_titles": row[9],
         }
