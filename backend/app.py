@@ -1,13 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
-from routes.filters import filters_bp
 from routes.concuria import concuria_bp
 
 app = Flask(__name__)
 CORS(app)
 
-# ✅ enregistre les deux blueprints
-app.register_blueprint(filters_bp, url_prefix='/api')
+# ✅ enregistre le seul blueprint nécessaire
 app.register_blueprint(concuria_bp, url_prefix='/api')
 print("✅ Chargement de app.py avec imports corrects")
 

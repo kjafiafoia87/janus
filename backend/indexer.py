@@ -1,34 +1,50 @@
 import psutil
-from elasticsearch import Elasticsearch
+from elasticsearch import exceptions
 from db.db_utils import wait_for_postgres, get_db_connection
-from services.es_client import es
+from utils.elasticsearch_utils import wait_for_elasticsearch
 
-# Attente de PostgreSQL
+# 1. Attente de PostgreSQL
 wait_for_postgres("postgres", 5432)
 
-# Connexion PostgreSQL
+# 2. Connexion PostgreSQL
 conn = get_db_connection()
 cursor = conn.cursor()
 
+# 3. Connexion Elasticsearch
+es = wait_for_elasticsearch()
 
-# Réinitialiser l’index
+# 4. Définir un mapping explicite pour merger_cases
+mapping = {
+    "mappings": {
+        "properties": {
+            "attachment_id": {"type": "keyword"},
+            "language": {"type": "keyword"},
+            "file_text": {"type": "text"},
+            "link": {"type": "keyword"},
+            "case_number": {"type": "keyword"},
+            "title": {"type": "text"},
+            "companies": {"type": "keyword"},
+            "decision_date": {"type": "date", "format": "dd-MM-yyyy"},
+            "label_codes": {"type": "keyword"},
+            "label_titles": {"type": "keyword"}
+        }
+    }
+}
+
+# 5. Réinitialiser l’index
 if es.indices.exists(index="merger_cases"):
     es.indices.delete(index="merger_cases")
-    print("Index merger_cases supprimé")
+    print("🗑️ Index merger_cases supprimé")
 
-from elasticsearch import exceptions
-
+# 6. Créer l’index avec mapping
 try:
-    es.indices.create(index="merger_cases")
+    es.indices.create(index="merger_cases", body=mapping)
+    print("✅ Index merger_cases recréé avec mapping")
 except exceptions.BadRequestError as e:
-    if "resource_already_exists_exception" in str(e):
-        print("ℹ️ Index merger_cases existe déjà, pas besoin de le créer.")
-    else:
-        raise
+    print("❌ Erreur création index :", e)
+    raise
 
-print("Index merger_cases recréé")
-
-# Requête SQL
+# 7. Requête SQL
 cursor.execute("""
 SELECT
     a.id AS attachment_id,
@@ -51,7 +67,7 @@ GROUP BY
     a.id, a.language, a.file_text, a.link, c.case_number, c.title, c.companies, c.decision_date;
 """)
 
-# Indexation par lots
+# 8. Indexation par lots
 batch_size = 20
 total = 0
 
@@ -77,6 +93,6 @@ while True:
         total += 1
 
         if total % 100 == 0:
-                print(f"➡️ {total} documents indexés — Memory used: {psutil.virtual_memory().percent}%")
+            print(f"➡️ {total} documents indexés — Memory used: {psutil.virtual_memory().percent}%")
 
 print(f"✅ Indexation terminée : {total} documents envoyés")

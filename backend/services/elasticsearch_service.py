@@ -3,13 +3,15 @@ from services.es_client import es
 
 def get_distinct_filters():
     aggs = {
-        "languages": {"terms": {"field": "language.keyword", "size": 100}},
+        # "languages": {"terms": {"field": "language.keyword", "size": 100}},
         "sectors": {"terms": {"field": "label_codes.keyword", "size": 100}},
         "companies": {"terms": {"field": "companies.keyword", "size": 1000}},
     }
 
     try:
         res = es.search(index="merger_cases", size=0, aggs=aggs)
+        print("DEBUG Elasticsearch AGGS result:", res)
+
         print("✅ Résultat Elasticsearch reçu :", res)
     except Exception as e:
         print("❌ Erreur lors de l'appel à Elasticsearch :", e)
