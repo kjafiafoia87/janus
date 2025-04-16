@@ -4,7 +4,10 @@ import os
 import time
 import traceback
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
+
+_es_instance = None  # Singleton global
 
 def wait_for_elasticsearch(timeout=180):
     host = os.getenv("ELASTICSEARCH_HOST", "http://elasticsearch:9200")
@@ -28,6 +31,13 @@ def wait_for_elasticsearch(timeout=180):
     return es
 
 
+def get_es():
+    global _es_instance
+    if _es_instance is None:
+        _es_instance = wait_for_elasticsearch()
+    return _es_instance
+
+
 def ensure_index(es, index_name="merger_cases"):
     try:
         print(f"🔍 Vérification de l'existence de l'index : {index_name}")
@@ -40,7 +50,6 @@ def ensure_index(es, index_name="merger_cases"):
             print(f"✅ Index créé : {created}")
         else:
             print(f"✅ Index {index_name} déjà présent.")
-
     except Exception as e:
         print("❌ Erreur lors de la vérification/création de l'index")
         print(f"Type : {type(e)}")
@@ -48,5 +57,3 @@ def ensure_index(es, index_name="merger_cases"):
         print("Traceback :")
         traceback.print_exc()
         raise
-
-es = wait_for_elasticsearch()
