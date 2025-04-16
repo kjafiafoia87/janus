@@ -57,14 +57,28 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
             }
         })
 
-    # Texte libre
-    file_text = filters.get("file_text") or filters.get("text_search")
-    if file_text:
-        must_clauses.append({
-            "match": {
-                "file_text": file_text
+    # Case Number
+    case_number = filters.get("case_number")
+    if case_number:
+        filter_clauses.append({
+            "wildcard": {
+                "case_number.keyword": {
+                    "value": f"*{case_number}*",
+                    "case_insensitive": True
+                }
             }
         })
+
+    # # Langues (sélection multiple)
+    # languages = filters.get("language") or []
+    # if isinstance(languages, str): 
+    #     languages = [languages]
+    # if languages:
+    #     filter_clauses.append({
+    #         "terms": {
+    #             "language.keyword": languages
+    #         }
+    #     })
 
     # Ajout au bool query
     query.setdefault("query", {}).setdefault("bool", {})

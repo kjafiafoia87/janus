@@ -1,7 +1,7 @@
 import psutil
 from elasticsearch import Elasticsearch
 from db.db_utils import wait_for_postgres, get_db_connection
-from utils.elasticsearch_utils import wait_for_elasticsearch
+from services.es_client import es
 
 # Attente de PostgreSQL
 wait_for_postgres("postgres", 5432)
@@ -10,8 +10,6 @@ wait_for_postgres("postgres", 5432)
 conn = get_db_connection()
 cursor = conn.cursor()
 
-# Connexion Elasticsearch
-es = wait_for_elasticsearch()
 
 # Réinitialiser l’index
 if es.indices.exists(index="merger_cases"):

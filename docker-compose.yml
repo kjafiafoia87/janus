@@ -5,11 +5,16 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # réduit à 512 Mo
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9200 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
     deploy:
       resources:
         limits:
@@ -29,21 +34,6 @@ services:
         limits:
           memory: 512m
 
-  backend:
-    build: ./backend
-    container_name: backend
-    volumes:
-      - ./backend:/app
-    ports:
-      - "5001:5000"
-    depends_on:
-      - elasticsearch
-      - postgres
-    deploy:
-      resources:
-        limits:
-          memory: 512m
-
   postgres:
     image: postgres:15
     container_name: postgres
@@ -56,10 +46,31 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./backend/db/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vincentgarrigue -d concuriadb"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     deploy:
       resources:
         limits:
           memory: 1g
+
+  backend:
+    build: ./backend
+    container_name: backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - "5001:5000"
+    environment:
+      ELASTICSEARCH_HOST: http://elasticsearch:9200
+      ELASTIC_CLIENT_APIVERSIONING: "1"  # ✅ important: enables compatibility headers
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   frontend:
     build:
@@ -67,7 +78,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend
     ports:
-      - "3000:5173"  # expose Vite dev server on 3000
+      - "3000:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules

@@ -2,7 +2,11 @@
 
 echo "Lancement de l'initialisation..."
 
-python init.py
+# Arrêter si init.py échoue
+if ! python init.py; then
+  echo "❌ Échec de l'initialisation. Arrêt du backend."
+  exit 1
+fi
 
-echo "Indexation terminée, lancement de l'app Flask..."
+echo "✅ Indexation terminée, lancement de l'app Flask..."
 python app.py

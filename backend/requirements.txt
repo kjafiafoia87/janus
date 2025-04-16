@@ -1,5 +1,5 @@
 flask
 flask-cors
-elasticsearch
+elasticsearch==8.12.1
 psycopg2-binary
 psutil

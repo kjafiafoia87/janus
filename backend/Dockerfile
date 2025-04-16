@@ -2,25 +2,32 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Augmenter les délais réseau pour pip
 ENV PIP_DEFAULT_TIMEOUT=180 \
     PIP_RETRIES=5 \
     PIP_NO_CACHE_DIR=1
 
-# Copier requirements en premier pour profiter du cache Docker
+# 🔧 Utiles pour debug
+RUN apt-get update && apt-get install -y curl && apt-get clean
+
+# 🔁 Étape 1 : copier requirements pour forcer le cache
 COPY requirements.txt .
 
-# Installer les dépendances avec fallback vers un miroir PyPI rapide
-RUN pip install --default-timeout=180 \
-    --retries=5 \
-    --index-url=https://pypi.org/simple \
-    -r requirements.txt
+# 💣 Étape 2 : supprimer toute version installée (par précaution)
+RUN pip uninstall -y elasticsearch || true
 
-# Copier le reste du code
+# ✅ Étape 3 : installer explicitement la bonne version
+RUN pip install "elasticsearch>=8.12.0"
+
+# 👀 Étape 4 : vérifier la version active
+RUN python -c "import elasticsearch; print('✅ ES version:', elasticsearch.__version__)"
+
+# 📦 Étape 5 : installer les autres dépendances
+RUN pip install -r requirements.txt
+
+# Copier le code
 COPY . .
 
 # Rendre le script de démarrage exécutable
 RUN chmod +x /app/entrypoint.sh
 
-# Point d'entrée
 ENTRYPOINT ["./entrypoint.sh"]

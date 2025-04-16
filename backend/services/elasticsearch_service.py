@@ -1,6 +1,5 @@
-from utils.elasticsearch_utils import es
 from utils.elasticsearch_filters import apply_filters
-
+from services.es_client import es
 
 def get_distinct_filters():
     aggs = {

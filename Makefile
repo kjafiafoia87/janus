@@ -24,10 +24,8 @@ front:
 	docker-compose build frontend
 	docker-compose up -d frontend
 
-# back:
-# 	docker-compose stop backend
-# 	docker-compose build backend
-# 	docker-compose up -d backend
+backlogs:
+	docker compose logs -f backend
 
 logs:
 	docker-compose logs -f
@@ -65,3 +63,13 @@ resetpg:
 	docker-compose down -v --remove-orphans
 	docker-compose up --build -d
 	docker-compose exec backend python indexer.py
+
+hardreset:
+	docker system prune -a --volumes
+	docker compose down -v
+	docker compose up --build
+
+ff:
+	docker-compose down -v --remove-orphans
+	docker compose build --no-cache
+	docker-compose up
