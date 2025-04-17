@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Document, SearchFilters } from '@/components/types';
+import { Document, SearchFilters } from '../types/document';
 interface UseSearchReturn {
   results: Document[];
   total: number;

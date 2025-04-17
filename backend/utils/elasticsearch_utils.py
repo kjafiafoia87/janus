@@ -1,5 +1,7 @@
 from elasticsearch._sync.client import Elasticsearch
 from elasticsearch import TransportError
+from utils.elasticsearch_filters import apply_filters
+
 import os
 import time
 import traceback

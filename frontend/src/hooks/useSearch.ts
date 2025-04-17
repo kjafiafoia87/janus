@@ -46,18 +46,11 @@ export function useSearch(documents: Document[]) {
       );
     }
 
-    // Filter by title
-    if (filters.title) {
-      results = results.filter(doc =>
-        doc.title.toLowerCase().includes(filters.title.toLowerCase())
-      );
-    }
-
     // Filter by companies
     if (filters.companies.length > 0) {
       results = results.filter(doc =>
         filters.companies.every(company =>
-          doc.companies.some(c => c.toLowerCase().includes(company.toLowerCase()))
+          doc.companies.some(c => c.toLowerCase() === company.toLowerCase())
         )
       );
     }

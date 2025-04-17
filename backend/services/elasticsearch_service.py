@@ -1,7 +1,9 @@
 from utils.elasticsearch_utils import get_es
+from utils.elasticsearch_filters import apply_filters
+
 
 def get_distinct_filters():
-    es = get_es()  # ✅ appel correct
+    es = get_es()  
     aggs = {
         "languages": {"terms": {"field": "language.keyword", "size": 100}},
         "sectors": {"terms": {"field": "label_codes.keyword", "size": 100}},
@@ -25,20 +27,22 @@ def get_distinct_filters():
         print("❌ Error parsing aggregations:", e)
         return {}
 
+
 def search_documents(filters):
-    es = get_es()  # ✅ appel correct
+    es = get_es()
     page = filters.get("page", 1)
     page_size = filters.get("pageSize", 20)
     from_ = (page - 1) * page_size
 
-    query = {"match_all": {}}  # You can make this dynamic later
+    base_query = {"query": {"bool": {}}}
+    query = apply_filters(base_query, filters)
 
     try:
         res = es.search(
             index="merger_cases",
             from_=from_,
             size=page_size,
-            query=query
+            body=query
         )
 
         print("🔍 Backend total hits:", res["hits"]["total"]["value"])
@@ -50,4 +54,8 @@ def search_documents(filters):
         }
     except Exception as e:
         print("❌ Erreur lors de la recherche :", e)
-        raise e
+        return {
+            "total": 0,
+            "results": [],
+            "error": str(e)
+        }

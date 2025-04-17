@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { SearchBar } from './Concuria/SearchBar';
+import DocumentModal from './Concuria/DocumentModal';
 import { ResultsList } from './Concuria/ResultsList';
 import { FilterSidebar } from './Concuria/FilterSidebar';
 import { Pagination } from './Concuria/Pagination';
 import { FilterOptions, SearchFilters } from './Concuria/types';
-import { useDebounce } from '../hooks/useDebounce';
 import { useSearchDocuments } from '../hooks/useSearchDocuments';
+import { useDebounce } from '../hooks/useDebounce';
+import { Document } from "./Concuria/types";
 
 export default function Concuria({ darkMode }: { darkMode: boolean }) {
   const [filters, setFilters] = useState<SearchFilters>({
@@ -20,6 +22,8 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
     label_codes: [],
     label_titles: [],
   });
+
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
 
   const [availableFilters, setAvailableFilters] = useState<FilterOptions>({
     languages: [],
@@ -41,7 +45,7 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
   }, []);
 
   return (
-    <div className="flex h-screen">
+    <div className={`flex min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <FilterSidebar
         filters={filters}
         setFilters={(newFilters) => {
@@ -64,12 +68,26 @@ export default function Concuria({ darkMode }: { darkMode: boolean }) {
           <div className={`mb-4 font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
             Found {total} result{total !== 1 && 's'}
           </div>
-          <ResultsList documents={results} darkMode={darkMode} loading={loading} />
+          <ResultsList
+            documents={results}
+            darkMode={darkMode}
+            loading={loading}
+            onSelectDocument={(doc) => setSelectedDocument(doc)}
+          />
+
+          {selectedDocument && (
+            <DocumentModal
+              doc={selectedDocument}
+              onClose={() => setSelectedDocument(null)}
+              darkMode={darkMode}
+            />
+          )}
           <Pagination
             currentPage={page}
             totalResults={total}
             pageSize={pageSize}
             onPageChange={setPage}
+            darkMode={darkMode}
           />
         </div>
       </main>
