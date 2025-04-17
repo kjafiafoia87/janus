@@ -4,16 +4,12 @@ up:
 down:
 	docker-compose down -v --remove-orphans
 
-restarti:
-	docker-compose down -v --remove-orphans
-	docker-compose build
-	docker-compose up -d
-	docker-compose exec backend python init.py
 
 restart:
 	docker-compose down -v --remove-orphans
 	docker-compose build
 	docker-compose up -d
+	docker compose logs -f backend 
 
 cache:
 	docker-compose down -v --remove-orphans
@@ -40,6 +36,9 @@ back:
 
 logsbd:
 	docker-compose logs postgres
+
+logsback:
+	docker compose logs -f backend 
 
 rebuild:
 	docker-compose down

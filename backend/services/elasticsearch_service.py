@@ -8,6 +8,7 @@ def get_distinct_filters():
         "languages": {"terms": {"field": "language.keyword", "size": 100}},
         "sectors": {"terms": {"field": "label_codes.keyword", "size": 100}},
         "companies": {"terms": {"field": "companies.keyword", "size": 1000}},
+        "label_titles": {"terms": {"field": "label_titles.keyword", "size": 1000}},
     }
 
     try:
@@ -22,6 +23,7 @@ def get_distinct_filters():
             "languages": [b["key"] for b in res["aggregations"]["languages"]["buckets"]],
             "sectors": [b["key"] for b in res["aggregations"]["sectors"]["buckets"]],
             "companies": [b["key"] for b in res["aggregations"]["companies"]["buckets"]],
+            "label_titles": [b["key"] for b in res["aggregations"]["label_titles"]["buckets"]],
         }
     except Exception as e:
         print("❌ Error parsing aggregations:", e)

@@ -18,6 +18,7 @@ export interface SearchFilters {
   text_search: string;
   date_from: string;
   date_to: string;
+  date_mode?: 'any' | 'before' | 'after' | 'between';
   label_codes: string[];
   label_titles: string[];
 }

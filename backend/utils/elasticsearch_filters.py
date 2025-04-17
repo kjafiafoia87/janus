@@ -16,47 +16,59 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
     filter_clauses = []
 
     # Dates
+    date_mode = filters.get("date_mode", "any")
     date_from = filters.get("date_from")
     date_to = filters.get("date_to")
 
-    if date_from and date_to:
+    if date_mode == "after" and date_from:
         filter_clauses.append({
             "range": {
-                "date": {
+                "decision_date": {
+                    "gte": date_from,
+                    "format": "yyyy-MM-dd",
+                }
+            }
+        })
+    elif date_mode == "before" and date_to:
+        filter_clauses.append({
+            "range": {
+                "decision_date": {
+                    "lte": date_to,
+                    "format": "yyyy-MM-dd",
+                }
+            }
+        })
+    elif date_mode == "between" and date_from and date_to:
+        filter_clauses.append({
+            "range": {
+                "decision_date": {
                     "gte": date_from,
                     "lte": date_to,
                     "format": "yyyy-MM-dd",
                 }
             }
         })
-    elif date_from:
-        filter_clauses.append({
-            "range": {
-                "date": {
-                    "gte": date_from,
-                    "format": "yyyy-MM-dd",
-                }
-            }
-        })
-    elif date_to:
-        filter_clauses.append({
-            "range": {
-                "date": {
-                    "lte": date_to,
-                    "format": "yyyy-MM-dd",
-                }
-            }
-        })
-
-    # Entreprises (au moins une)
+        
+    # Companies — match all selected
     companies = filters.get("companies")
     if companies:
-        filter_clauses.append({
-            "terms": {
-                "companies.keyword": companies
-            }
-        })
+        for company in companies:
+            filter_clauses.append({
+                "term": {
+                    "companies.keyword": company
+                }
+            })
 
+    # Label Titles — match all selected
+    label_titles = filters.get("label_titles")
+    if label_titles:
+        for label in label_titles:
+            filter_clauses.append({
+                "term": {
+                    "label_titles.keyword": label
+                }
+            })
+        
     # Case Number
     case_number = filters.get("case_number")
     if case_number:
