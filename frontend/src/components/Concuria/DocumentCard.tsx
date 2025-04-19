@@ -1,4 +1,4 @@
-import React from 'react';
+import { formatDate } from '../../utils/date';
 import { Document } from './types';
 import { Globe2, Tag, FileText } from 'lucide-react';
 
@@ -39,7 +39,7 @@ export default function DocumentCard({ doc, darkMode, onClick }: Props) {
               <span>{doc.case_number} — {doc.title}</span>
             </div>
             <p className={`text-sm ${theme.meta}`}>
-              {doc.decision_date}
+              {formatDate(doc.decision_date)}
             </p>
           </div>
 

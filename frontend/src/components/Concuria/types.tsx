@@ -21,6 +21,7 @@ export interface SearchFilters {
   date_mode?: 'any' | 'before' | 'after' | 'between';
   label_codes: string[];
   label_titles: string[];
+  sector_prefixes: string[];
 }
 
 export interface FilterOptions {

@@ -3,6 +3,7 @@ import { Filter } from 'lucide-react';
 import { Calendar, Globe2 } from 'lucide-react';
 import { MultiSelect } from '../MultiSelect';
 import { SearchFilters, FilterOptions } from './types';
+import { SECTOR_CATEGORIES } from './constantes';
 
 interface Props {
   filters: SearchFilters;
@@ -10,6 +11,9 @@ interface Props {
   availableFilters: FilterOptions;
   darkMode: boolean;
 }
+const sectorOptions = Object.entries(SECTOR_CATEGORIES).map(
+  ([code, label]) => `${code} - ${label}`
+);
 
 export function FilterSidebar({ filters, setFilters, availableFilters, darkMode }: Props) {
   return (
@@ -32,23 +36,6 @@ export function FilterSidebar({ filters, setFilters, availableFilters, darkMode 
                 value={filters.case_number}
                 onChange={(e) => setFilters({ ...filters, case_number: e.target.value })}
                 placeholder="Enter case number"
-                className={`w-full rounded-md shadow-sm text-sm ${darkMode
-                  ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
-                  : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
-              />
-            </div>
-
-            {/* Title */}
-            <div>
-              <label htmlFor="title" className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Title
-              </label>
-              <input
-                id="title"
-                type="text"
-                value={filters.title}
-                onChange={(e) => setFilters({ ...filters, title: e.target.value })}
-                placeholder="Document title"
                 className={`w-full rounded-md shadow-sm text-sm ${darkMode
                   ? 'bg-gray-700 border-gray-600 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500'
                   : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'}`}
@@ -91,6 +78,26 @@ export function FilterSidebar({ filters, setFilters, availableFilters, darkMode 
               />
             </div>
 
+            {/* Label Code Sector (label_code prefix) */}
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                Label Code Sector
+              </label>
+              <MultiSelect
+                options={sectorOptions}
+                selected={(filters.sector_prefixes || []).map(code => {
+                  const label = SECTOR_CATEGORIES[code as keyof typeof SECTOR_CATEGORIES];
+                  return `${code} - ${label}`;
+                })}
+                onChange={(selected) => {
+                  const prefixes = selected.map(item => item.split(' - ')[0]);
+                  setFilters({ ...filters, sector_prefixes: prefixes });
+                }}
+                placeholder="Select sectors"
+                darkMode={darkMode}
+              />
+            </div>
+
             {/* Label Titles */}
             <div>
               <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -105,27 +112,11 @@ export function FilterSidebar({ filters, setFilters, availableFilters, darkMode 
               />
             </div>
 
-            {/* Label Codes
-            <div>
-              <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Label Codes
-              </label>
-              <MultiSelect
-                options={availableFilters.label_titles || []}
-                selected={filters.label_titles}
-                onChange={(selected) => setFilters({ ...filters, label_titles: selected })}
-                placeholder="Select Label Codes"
-                darkMode={darkMode}
-              />
-            </div> */}
-
             {/* Period */}
             <div>
               <label className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 Period
               </label>
-
-              <div>
               <label
                 htmlFor="date-mode-select"
                 className={`block text-sm font-medium mb-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}
@@ -145,9 +136,7 @@ export function FilterSidebar({ filters, setFilters, availableFilters, darkMode 
                 <option value="before">Before</option>
                 <option value="between">Between</option>
               </select>
-            </div>
 
-              {/* Conditionally show dates */}
               {(filters.date_mode === 'after' || filters.date_mode === 'between') && (
                 <div className="relative mb-2">
                   <label htmlFor="date-from" className="sr-only">Start date</label>
@@ -181,6 +170,31 @@ export function FilterSidebar({ filters, setFilters, availableFilters, darkMode 
               )}
             </div>
 
+            {/* Reset Button */}
+            <button
+              onClick={() =>
+                setFilters({
+                  case_number: '',
+                  title: '',
+                  companies: [],
+                  language: '',
+                  date_from: '',
+                  date_to: '',
+                  date_mode: 'any',
+                  label_titles: [],
+                  label_codes: [],
+                  sector_prefixes: [],
+                  text_search: ''
+                })
+              }
+              className={`mt-4 w-full text-sm font-medium px-4 py-2 rounded-md border shadow-sm ${
+                darkMode
+                  ? 'bg-gray-700 text-white border-gray-600 hover:bg-gray-600'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+              }`}
+            >
+              Reset Filters
+            </button>
           </div>
         </div>
       </div>

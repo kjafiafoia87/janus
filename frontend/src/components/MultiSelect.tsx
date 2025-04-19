@@ -21,11 +21,12 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const listboxId = "multi-select-options";
 
-  const filteredOptions = options.filter(option =>
+  const filteredOptions = options
+  .filter(option =>
     option.toLowerCase().includes(search.toLowerCase()) &&
     !selected.includes(option)
   )
-  .slice(0, 10);
+  .sort((a, b) => a.localeCompare(b));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -104,7 +105,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
       {isOpen && filteredOptions.length > 0 && (
         <div
           id={listboxId}
-          className={`absolute z-10 w-full mt-1 rounded-md shadow-lg ${
+          className={`absolute z-10 w-full mt-1 rounded-md shadow-lg max-h-60 overflow-y-auto ${
             darkMode
               ? 'bg-gray-700 border border-gray-600'
               : 'bg-white border border-gray-200'

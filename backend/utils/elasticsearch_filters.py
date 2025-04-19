@@ -58,6 +58,14 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
                     "companies.keyword": company
                 }
             })
+    sector_prefixes = filters.get("sector_prefixes")
+    if sector_prefixes:
+        for prefix in sector_prefixes:
+            filter_clauses.append({
+                "prefix": {
+                    "label_codes.keyword": prefix  # ex: "C" => match "C.10", "C.12", etc.
+                }
+            })
 
     # Label Titles — match all selected
     label_titles = filters.get("label_titles")
@@ -91,7 +99,7 @@ def apply_filters(query: Dict, filters: Dict) -> Dict:
                 "language.keyword": languages
             }
         })
-
+    
     # Ajout au bool query
     query.setdefault("query", {}).setdefault("bool", {})
 
